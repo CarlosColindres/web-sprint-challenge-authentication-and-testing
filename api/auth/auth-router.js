@@ -8,7 +8,7 @@ const { jwtSecret } = require('./secret.js');
 
 
 
-router.post('/register', (req, res) => {
+router.post('/register',(req, res) => {
   const credentials = req.body;
 
   if (isValid(credentials)) {
@@ -22,15 +22,15 @@ router.post('/register', (req, res) => {
     // save the user to the database
     Users.add(credentials)
       .then(user => {
-        res.status(201).json({ user });
+        const {id, username, password} = user
+        res.status(201).json({ id,username,password});
       })
       .catch(error => {
-        res.status(500).json({ message: error.message });
+        res.status(500).json('username taken');
       });
   } else {
-    res.status(400).json({
-      message: "please provide username and password and the password shoud be alphanumeric",
-    });
+    res.status(400).json( "username and password required",
+    );
   }
 });
 
@@ -52,13 +52,17 @@ router.post('/login', (req, res) => {
       });
   } else {
     res.status(400).json({
-      message: "please provide username and password and the password shoud be alphanumeric",
+      message: "username and password required",
     });
   }
 });
 
 function isValid(user) {
-  return Boolean(user.username && user.password && typeof user.password === "string");
+  if (!user.username || !user.password) {
+    return false
+  } else {
+    return true
+  }
 }
 
 function makeToken(user) {
@@ -72,7 +76,5 @@ function makeToken(user) {
   return jwt.sign(payload, jwtSecret, options);
 }
 
-function isTaken(req, res, next) {
-  
-}
+
 module.exports = router;

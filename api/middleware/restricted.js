@@ -7,13 +7,13 @@ module.exports = (req, res, next) => {
   const token = req.headers.authorization
 
   if (!token) {
-    return res.status(401).json({ message: 'we wants token' })
+    return res.status(401).json({ message: 'token required' })
   }
 
   jwt.verify(token, jwtSecret, (err, decoded) => {
     if (err) {
       console.log('decoded error ->', err)
-      return res.status(401).json({ message: 'token bad' })
+      return res.status(401).json('token invalid')
     }
 
     console.log('decoded token ->', decoded)
